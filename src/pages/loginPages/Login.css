@@ -1,0 +1,14 @@
+/* Basic login styles (keeps parity with signup) */
+.page-header{ width:100%; padding:24px 40px; display:flex; align-items:center; }
+/* .page-logo{ color:#e50914; font-size:36px; font-weight:900; } */
+.page-logo{
+  width:170px;
+  height:auto;
+}
+.login-center{ display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 90px); padding:30px 20px 60px; }
+.login-card{ width:100%; max-width:420px; padding:36px; background:transparent; color:#fff; }
+.login-form{ display:grid; gap:12px; }
+.login-form input{ padding:14px; border-radius:6px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.04); color:#fff }
+.btn{ padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; font-weight:700; cursor:pointer }
+.help-text{ margin-top:16px; text-align:center; color:rgba(255,255,255,0.8) }
+.error{ background: rgba(229, 9, 20, 0.16); color: #ffd1d1; padding: 10px; border-radius:6px; }
