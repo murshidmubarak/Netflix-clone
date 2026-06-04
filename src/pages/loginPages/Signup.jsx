@@ -1,70 +1,58 @@
-import React, { useReducer } from 'react'
+import React, { useReducer, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authReducer, initialState } from '../../reducers/authReducer'
 import './Signup.css'
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../../fireBase';
-
-
+import { getCleanErrorMessage } from '../../utils/authErrors';
 
 const Signup = () => {
   const [state, dispatch] = useReducer(authReducer, initialState)
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    dispatch({ type: 'SET_ERROR', payload: '' })
 
+    if (!state.email || !state.password || !state.confirm) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: 'Please fill in all fields'
+      })
+      return
+    }
 
-const handleSubmit = async (e) => {
+    if (state.password !== state.confirm) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: 'Passwords do not match'
+      })
+      return
+    }
 
-  e.preventDefault()
-
-  if (!state.email || !state.password || !state.confirm) {
-
-    dispatch({
-      type: 'SET_ERROR',
-      payload: 'Please fill in all fields'
-    })
-
-    return
-  }
-
-  if (state.password !== state.confirm) {
-
-    dispatch({
-      type: 'SET_ERROR',
-      payload: 'Passwords do not match'
-    })
-
-    return
-  }
-
-  try {
-
-    const userCredential =
-      await createUserWithEmailAndPassword(
+    setLoading(true)
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         state.email,
         state.password
       )
-
-    console.log(userCredential.user)
-
-    alert("Signup Successful")
-
-    dispatch({
-      type: 'RESET_FORM'
-    })
-
-    // navigate('/home')
-    navigate('/home', { replace: true });
-
-  } catch (error) {
-
-    dispatch({
-      type: 'SET_ERROR',
-      payload: error.message
-    })
+      console.log(userCredential.user)
+      dispatch({
+        type: 'RESET_FORM'
+      })
+      navigate('/home', { replace: true });
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: getCleanErrorMessage(error)
+      })
+    } finally {
+      setLoading(false)
+    }
   }
-}
+
   return (
     <div className="signup-page">
       <header className="page-header">
@@ -101,7 +89,9 @@ const handleSubmit = async (e) => {
               onChange={(e) => dispatch({ type: 'SET_CONFIRM', payload: e.target.value })}
               required
             />
-            <button className="btn" type="submit">Continue</button>
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? 'Creating Account...' : 'Continue'}
+            </button>
 
           </form>
 
@@ -114,3 +104,4 @@ const handleSubmit = async (e) => {
 }
 
 export default Signup
+

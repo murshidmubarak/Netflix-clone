@@ -1,11 +1,20 @@
-import React from 'react';
-import { FaBookmark } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaBookmark, FaCaretDown } from 'react-icons/fa';
 import './Navbar.css';
 import WatchlistModal from '../../othercomponents/WatchlistModal';
-import { useState } from 'react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../../fireBase';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <>
@@ -25,11 +34,41 @@ const Navbar = () => {
             style={{ cursor: 'pointer' }}
           />
 
-          <img
-            className='avatar'
-            src='https://i.pinimg.com/originals/0d/dc/ca/0ddccae723d85a703b798a5e682c23c1.png'
-            alt=''
-          />
+          <div className='profileContainer'>
+            <img
+              className='avatar'
+              src='https://i.pinimg.com/originals/0d/dc/ca/0ddccae723d85a703b798a5e682c23c1.png'
+              alt='Profile'
+            />
+            <FaCaretDown className='caretIcon' />
+            
+            <div className='dropdownMenu'>
+              <div className='dropdownCaret'></div>
+              <ul className='dropdownList'>
+                <li className='dropdownItem'>
+                  <img
+                    className='dropdownAvatar'
+                    src='https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
+                    alt='Kids Profile'
+                  />
+                  <span>Kids</span>
+                </li>
+                <li className='dropdownItem'>
+                  <span>Manage Profiles</span>
+                </li>
+                <li className='dropdownItem'>
+                  <span>Account</span>
+                </li>
+                <li className='dropdownItem'>
+                  <span>Help Center</span>
+                </li>
+                <hr className='dropdownDivider' />
+                <li className='dropdownItem signoutBtn' onClick={handleLogout}>
+                  <span>Sign out of Netflix</span>
+                </li>
+              </ul>
+            </div>
+          </div>
 
         </div>
 
@@ -40,3 +79,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

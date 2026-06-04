@@ -3,29 +3,32 @@ import { useNavigate } from 'react-router-dom'
 import './Login.css'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../fireBase'
+import { getCleanErrorMessage } from '../../utils/authErrors'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
+    setLoading(true)
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      // navigate('/home')
       navigate('/home', { replace: true });
     } catch (err) {
-      setError(err.message)
+      setError(getCleanErrorMessage(err))
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <div className="signup-page">
       <header className="page-header">
-        {/* <span className="page-logo">NETFLIX</span> */}
         <img className='page-logo' src='https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/1920px-Netflix_2015_logo.svg.png' alt='logo'/>
       </header>
       <div className="signup-center">
@@ -38,7 +41,9 @@ const Login = () => {
           <form className="signup-form" onSubmit={handleSubmit}>
             <input type="email" placeholder="Email or mobile number" value={email} onChange={(e)=>setEmail(e.target.value)} required />
             <input type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} required />
-            <button className="btn" type="submit">Continue</button>
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? 'Signing In...' : 'Continue'}
+            </button>
           </form>
           <p className="help-text">New here? <a href="/signup">Create an account</a></p>
           <p className="recaptcha-text">This page is protected by Google reCAPTCHA to ensure you're not a bot.</p>
@@ -49,3 +54,4 @@ const Login = () => {
 }
 
 export default Login
+
